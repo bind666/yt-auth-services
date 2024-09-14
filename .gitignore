@@ -1,0 +1,43 @@
+# Node.js modules
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Puppeteer executable
+# Exclude Chrome binaries that Puppeteer downloads
+**/chrome-win/
+**/chrome-linux/
+**/chrome-mac/
+
+# Build directories
+dist/
+build/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files and cache
+*.tmp
+*.temp
+.cache/
+*.swp
+.vscode/
+.idea/
+
+# Files related to Excel or data scraping
+*.xlsx
+*.csv
+
+# macOS specific
+*.DS_Store
