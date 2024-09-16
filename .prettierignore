@@ -1,49 +1,47 @@
-# Ignore node_modules directory
+# Ignore all node modules
 node_modules/
 
-# Ignore build output directories
-build/
+# Ignore build directories
 dist/
+build/
+
+# Ignore bundled JS files
+*.bundle.js
+*.min.js
+
+# Ignore generated files
+coverage/
+public/
 
 # Ignore environment files
 .env
 .env.local
-.env.*.local
+.env.production
+.env.test
 
 # Ignore lock files
 package-lock.json
 yarn.lock
 
-# Ignore any files related to Puppeteer or browser binaries
-**/chrome-win/
-**/chrome-linux/
-**/chrome-mac/
+# Ignore specific configuration files
+*.config.js
 
-# Ignore minified files
-*.min.js
-*.min.css
+# Ignore markdown files
+*.md
 
-# Ignore JSON or YAML files
-*.json
-*.yaml
-
-# Ignore generated files or reports
-coverage/
-reports/
-*.log
-
-# Ignore Excel or CSV files for scraping data
-*.xlsx
-*.csv
-
-# Ignore IDE specific directories and settings
-.vscode/
-.idea/
-
-# Ignore assets like images or media
+# Ignore all images
 *.png
 *.jpg
 *.jpeg
 *.gif
 *.svg
 
+# Ignore specific file or directory
+src/legacy-code/
+docs/README.md
+
+*.json
+**/*/*.json
+tsconfig.json
+eslint.config.mjs
+.prettierrc

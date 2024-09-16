@@ -1,0 +1,5 @@
+**/*.json
+*.json
+.gitignore
+.env
+.env.*
