@@ -1,0 +1,14 @@
+const ROLES = {
+  ADMIN: 'ADMIN',
+  USER: 'USER',
+  MANAGER: 'MANAGER',
+};
+
+const USER_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  DELETED: 'DELETED',
+  BLOCKED: 'BLOCKED',
+};
+
+export { ROLES, USER_STATUS };
