@@ -1,8 +1,20 @@
-import logger from '../config/logger';
+import User from '../models/User';
+
+interface IUser {
+  email: string;
+  name: string;
+  hashedPassword: string;
+}
 
 class AuthServices {
-  run() {
-    logger.info('AuthServices');
+  constructor(private userRepository: typeof User) {}
+
+  async create(user: IUser) {
+    return this.userRepository.create({
+      email: user.email,
+      name: user.name,
+      password: user.hashedPassword,
+    });
   }
 }
 

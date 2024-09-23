@@ -32,3 +32,21 @@ export const userRegisterValidator = checkSchema({
     },
   },
 });
+
+export const userLoginValidator = checkSchema({
+  email: {
+    in: ['body'],
+    isEmail: {
+      errorMessage: 'Please enter a valid email address',
+    },
+    normalizeEmail: true,
+  },
+
+  password: {
+    in: ['body'],
+    isLength: {
+      options: { min: 6 },
+      errorMessage: 'Password must be at least 6 characters long',
+    },
+  },
+});

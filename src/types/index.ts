@@ -13,3 +13,10 @@ export interface User {
 export interface UserSignUpRequest extends Request {
   body: User;
 }
+
+export interface UserSignInRequest extends Request {
+  body: {
+    email: string;
+    password: string;
+  };
+}
