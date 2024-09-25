@@ -6,11 +6,17 @@ import {
   userLoginValidator,
   userRegisterValidator,
 } from '../validator/auth-validator';
-import { UserSignInRequest, UserSignUpRequest } from '../types';
+import {
+  AuthenticateReq,
+  UserSignInRequest,
+  UserSignUpRequest,
+} from '../types';
 import User from '../models/User';
 import QueryServices from '../services/QueryServices';
 import TokenService from '../services/TokenServices';
 import Refresh from '../models/Refresh';
+import authenticate from '../middleware/authenticate';
+import parseRefreshToken from '../middleware/parseRefreshToken';
 
 const userRouter = Router();
 const authService = new AuthServices(User);
@@ -34,6 +40,21 @@ userRouter.post(
   userLoginValidator,
   (req: Request, res: Response, next: NextFunction) =>
     authController.login(req as UserSignInRequest, res, next),
+);
+
+userRouter.get(
+  '/self',
+  authenticate,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.self(req as AuthenticateReq, res, next),
+);
+
+userRouter.delete(
+  '/logout',
+  authenticate,
+  parseRefreshToken,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.logout(req as AuthenticateReq, res, next),
 );
 
 export default userRouter;

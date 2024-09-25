@@ -6,6 +6,10 @@ class QueryServices {
   async findByEmail(email: string) {
     return await this.userRepository.findOne({ email: email });
   }
+
+  async findById(id: string) {
+    return await this.userRepository.findById(id);
+  }
 }
 
 export default QueryServices;

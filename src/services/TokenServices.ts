@@ -27,10 +27,17 @@ class TokenService {
     return refreshToken;
   }
 
-  async persistRefreshToken(id: Types.ObjectId, refreshToken: string) {
+  async persistRefreshToken(id: Types.ObjectId) {
+    console.log(id);
     return await this.refreshTokenRepository.create({
       userid: id,
-      token: refreshToken,
+    });
+  }
+
+  async deleteRefreshToken(id: Types.ObjectId, sub: Types.ObjectId) {
+    return await this.refreshTokenRepository.deleteOne({
+      _id: sub,
+      userid: id,
     });
   }
 }

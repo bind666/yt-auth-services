@@ -20,3 +20,16 @@ export interface UserSignInRequest extends Request {
     password: string;
   };
 }
+
+export interface AuthCookie {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface AuthenticateReq extends Request {
+  auth: {
+    id: string;
+    email: string;
+    sub?: string;
+  };
+}

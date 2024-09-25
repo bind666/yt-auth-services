@@ -6,10 +6,6 @@ const tokenSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
-    token: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,

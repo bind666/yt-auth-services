@@ -2,13 +2,18 @@ import { Response, NextFunction } from 'express';
 import { AuthServices } from '../services';
 import { validationResult } from 'express-validator';
 import createHttpError from 'http-errors';
-import { UserSignInRequest, UserSignUpRequest } from '../types';
+import {
+  AuthenticateReq,
+  UserSignInRequest,
+  UserSignUpRequest,
+} from '../types';
 import QueryServices from '../services/QueryServices';
 import logger from '../config/logger';
 import bcrypt from 'bcryptjs';
 import Config from '../config/config';
 import TokenService from '../services/TokenServices';
 import { JwtPayload } from 'jsonwebtoken';
+import { Types } from 'mongoose';
 
 class AuthController {
   constructor(
@@ -73,11 +78,11 @@ class AuthController {
         return;
       }
 
-      if (user.devices === 0) {
-        const err = createHttpError(429, 'Device Limit Exceeded.');
-        next(err);
-        return;
-      }
+      // if (user.devices === 0) {
+      //   const err = createHttpError(429, 'Device Limit Exceeded.');
+      //   next(err);
+      //   return;
+      // }
 
       const validPassword = await bcrypt.compare(password, user.password);
       if (!validPassword) {
@@ -92,8 +97,7 @@ class AuthController {
       };
 
       const accessToken = this.tokenservice.generateAccessToken(payload);
-      const refreshToken = this.tokenservice.generateRefreshToken(payload);
-
+      // console.log(accessToken);
       res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: true,
@@ -101,22 +105,59 @@ class AuthController {
         sameSite: 'strict',
       });
 
+      // user.devices = user.devices - 1;
+      // await user.save({});
+
+      const refresh = await this.tokenservice.persistRefreshToken(user._id);
+      console.log('ref:', refresh);
+      const refreshPayload: JwtPayload = {
+        ...payload,
+        sub: String(refresh._id),
+      };
+
+      const refreshToken =
+        this.tokenservice.generateRefreshToken(refreshPayload);
+
       res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         secure: true,
         maxAge: 1000 * 60 * 60 * 24 * 365,
         sameSite: 'strict',
       });
-      // user.devices = user.devices - 1;
-      await user.save({});
 
-      await this.tokenservice.persistRefreshToken(user._id, refreshToken);
       res
         .status(200)
         .json({ user: user, message: 'User logged in successfully' });
     } catch (error) {
       next(error);
       return;
+    }
+  }
+
+  async self(req: AuthenticateReq, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.auth;
+      const user = await this.queryService.findById(id);
+      res.status(200).json({ user });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async logout(req: AuthenticateReq, res: Response, next: NextFunction) {
+    try {
+      const { id, sub } = req.auth;
+      console.log('🔥🔥🔥🔥🔥🔥');
+      await this.tokenservice.deleteRefreshToken(
+        new Types.ObjectId(id),
+        new Types.ObjectId(sub),
+      );
+
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
+      res.status(200).json({ message: 'User logged out successfully.' });
+    } catch (error) {
+      next(error);
     }
   }
 

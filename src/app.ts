@@ -3,14 +3,16 @@ import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import { morganStream } from './utils';
 import { HttpError } from 'http-errors';
-import Config from './config/config';
 import userRouter from './routes/user.route';
+import cookieParser from 'cookie-parser';
 
 const app = express();
 app.use(morgan('tiny', { stream: morganStream }));
 
 app.use(express.json({ limit: '1MB' }));
 app.use(express.urlencoded({ extended: true, limit: '1MB' }));
+app.use(express.static('public'));
+app.use(cookieParser());
 
 //Routes
 app.use('/api/v1/user', userRouter);
