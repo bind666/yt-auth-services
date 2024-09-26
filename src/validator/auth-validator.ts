@@ -50,3 +50,22 @@ export const userLoginValidator = checkSchema({
     },
   },
 });
+
+export const changePasswordValidator = checkSchema({
+  // Validate and sanitize email
+  oldpassword: {
+    in: ['body'],
+    isEmail: {
+      errorMessage: 'Please enter a valid email address',
+    },
+    normalizeEmail: true,
+  },
+  // Validate and sanitize name
+  newpassword: {
+    in: ['body'],
+    isLength: {
+      options: { min: 6 },
+      errorMessage: 'Password must be at least 6 characters long',
+    },
+  },
+});

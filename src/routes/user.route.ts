@@ -1,60 +1,22 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import { Request, Response, NextFunction, Router } from 'express';
-import AuthController from '../controller/AuthController';
-import { AuthServices } from '../services';
-import {
-  userLoginValidator,
-  userRegisterValidator,
-} from '../validator/auth-validator';
-import {
-  AuthenticateReq,
-  UserSignInRequest,
-  UserSignUpRequest,
-} from '../types';
-import User from '../models/User';
-import QueryServices from '../services/QueryServices';
-import TokenService from '../services/TokenServices';
-import Refresh from '../models/Refresh';
 import authenticate from '../middleware/authenticate';
-import parseRefreshToken from '../middleware/parseRefreshToken';
+import UserService from '../services/UserServices';
+import User from '../models/User';
+import UserController from '../controller/UserController';
+import { FetchUserRequest } from '../types';
+import paginationSchema from '../validator/user-validator';
 
 const userRouter = Router();
-const authService = new AuthServices(User);
-const queryService = new QueryServices(User);
-const tokenService = new TokenService(Refresh);
-const authController = new AuthController(
-  authService,
-  queryService,
-  tokenService,
-);
-
-userRouter.post(
-  '/register',
-  userRegisterValidator,
-  (req: Request, res: Response, next: NextFunction) =>
-    authController.register(req as UserSignUpRequest, res, next),
-);
-
-userRouter.post(
-  '/login',
-  userLoginValidator,
-  (req: Request, res: Response, next: NextFunction) =>
-    authController.login(req as UserSignInRequest, res, next),
-);
+const userService = new UserService(User);
+const userController = new UserController(userService);
 
 userRouter.get(
-  '/self',
+  '/',
   authenticate,
+  paginationSchema,
   (req: Request, res: Response, next: NextFunction) =>
-    authController.self(req as AuthenticateReq, res, next),
-);
-
-userRouter.delete(
-  '/logout',
-  authenticate,
-  parseRefreshToken,
-  (req: Request, res: Response, next: NextFunction) =>
-    authController.logout(req as AuthenticateReq, res, next),
+    userController.fetchUsers(req as FetchUserRequest, res, next),
 );
 
 export default userRouter;

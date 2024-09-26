@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import morgan from 'morgan';
 import { morganStream } from './utils';
 import { HttpError } from 'http-errors';
-import userRouter from './routes/user.route';
+import userRouter from './routes/auth.route';
 import cookieParser from 'cookie-parser';
 
 const app = express();

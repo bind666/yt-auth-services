@@ -4,6 +4,7 @@ import { validationResult } from 'express-validator';
 import createHttpError from 'http-errors';
 import {
   AuthenticateReq,
+  ChangePasswordRequest,
   UserSignInRequest,
   UserSignUpRequest,
 } from '../types';
@@ -147,7 +148,7 @@ class AuthController {
   async logout(req: AuthenticateReq, res: Response, next: NextFunction) {
     try {
       const { id, sub } = req.auth;
-      console.log('🔥🔥🔥🔥🔥🔥');
+      // console.log('🔥🔥🔥🔥🔥🔥');
       await this.tokenservice.deleteRefreshToken(
         new Types.ObjectId(id),
         new Types.ObjectId(sub),
@@ -165,6 +166,48 @@ class AuthController {
     const salt = await bcrypt.genSalt(saltRound);
     const hashedPassword = await bcrypt.hash(password, salt);
     return hashedPassword;
+  }
+
+  async changePassword(
+    req: ChangePasswordRequest,
+    res: Response,
+    next: NextFunction,
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(400).json({ errors: errors.array() });
+        return;
+      }
+
+      const { oldPassword, newPassword } = req.body;
+      const { email } = req.auth;
+
+      const user = await this.queryService.findByEmail(email);
+      if (!user) {
+        const err = createHttpError(401, 'Invalid credentials.');
+        next(err);
+        return;
+      }
+
+      const validPassword = await bcrypt.compare(oldPassword, user.password);
+      if (!validPassword) {
+        const err = createHttpError(401, 'Invalid Credentials.');
+        next(err);
+        return;
+      }
+
+      const hashedPassword = await this.hashPassword(
+        +Config.SALT_ROUND!,
+        newPassword,
+      );
+
+      user.password = hashedPassword;
+      await user.save();
+      res.status(200).json({ message: 'Password changed successfully.' });
+    } catch (error) {
+      next(error);
+    }
   }
 }
 

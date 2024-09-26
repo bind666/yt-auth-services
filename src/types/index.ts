@@ -33,3 +33,18 @@ export interface AuthenticateReq extends Request {
     sub?: string;
   };
 }
+
+export interface ChangePasswordRequest extends Request, AuthenticateReq {
+  body: {
+    oldPassword: string;
+    newPassword: string;
+  };
+}
+
+export interface FetchUserRequest extends Request {
+  query: {
+    page: string;
+    order: string;
+    limit: string;
+  };
+}
